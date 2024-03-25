@@ -135,6 +135,7 @@ struct offline_tree_{
     vector<float> v_by;
     vector<float> v_bz;
     vector<float> v_max;
+    vector<float> v_maxTime;
     vector<float> v_min;
     vector<float> v_max_afterFilter;
     vector<float> v_max_threeConsec;

@@ -462,6 +462,7 @@ void OfflineFactory::prepareOutBranches(){
     outTree->Branch("duration",&outputTreeContents.v_duration);
     outTree->Branch("delay",&outputTreeContents.v_delay);
     outTree->Branch("max",&outputTreeContents.v_max);
+    outTree->Branch("maxTime",&outputTreeContents.v_maxTime);
 
     outTree->Branch("present",&outputTreeContents.present);
     outTree->Branch("event_trigger_time_tag",&outputTreeContents.event_trigger_time_tag);
@@ -520,6 +521,7 @@ void OfflineFactory::resetOutBranches(){
     outputTreeContents.v_duration.clear();
     outputTreeContents.v_delay.clear();
     outputTreeContents.v_max.clear();
+    outputTreeContents.v_maxTime.clear();
     outputTreeContents.present.clear();
     outputTreeContents.event_trigger_time_tag.clear();
     outputTreeContents.event_time.clear();
@@ -1636,6 +1638,8 @@ vector< pair<float,float> > OfflineFactory::processChannel(int ic){
 
     }
     outputTreeContents.v_max.push_back(waves[ic]->GetMaximum());
+    int binmax = waves[ic]->GetMaximumBin(); double maxTime = waves[ic]->GetXaxis()->GetBinCenter(binmax);
+    outputTreeContents.v_maxTime.push_back(maxTime);
     outputTreeContents.v_max_threeConsec.push_back(maxThreeConsec);
     //FIXME Need to add low pass filter option back
     outputTreeContents.v_max_afterFilter.push_back(waves[ic]->GetMaximum());

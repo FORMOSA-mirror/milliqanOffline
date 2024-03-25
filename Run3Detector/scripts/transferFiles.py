@@ -130,5 +130,5 @@ if __name__ == "__main__":
     source = "/home/milliqan/data/"
     logFile = "/home/milliqan/MilliDAQ_FileTransfers.log"
 
-    destinations = {"UCSB":"milliqan@cms3.physics.ucsb.edu:/net/cms26/cms26r0/milliqan/Run3/", "OSU":"milliqan@128.146.39.20:/store/user/milliqan/run3/"} #temporary change to OSU ip address
+    destinations = {"CERN":"formosa@lxplus:/net/cms26/cms26r0/milliqan/Run3/"} #temporary change to OSU ip address
     transferFiles(source,destinations,logFile,force=False)

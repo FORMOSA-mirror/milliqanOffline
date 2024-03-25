@@ -60,8 +60,9 @@ def validateOutput(outputFile,runNumber=-1,fileNumber=-1):
 def runOfflineFactory(inputFile,outputFile,exe,configurations,publish,force_publish,database,appendToTag,mergedTriggerFile,drs,display,slab,formosa,runNumber=None,fileNumber=None):
     if force_publish:
         publish = True
-    if not os.path.exists("/".join(outputFile.split("/")[:-1])):
-        os.makedirs("/".join(outputFile.split("/")[:-1]))
+    if "/" in outputFile:
+	    if not os.path.exists("/".join(outputFile.split("/")[:-1])):
+                os.makedirs("/".join(outputFile.split("/")[:-1]))
     if runNumber == None:
         try:
             if drs:
