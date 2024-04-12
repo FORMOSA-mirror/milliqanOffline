@@ -1,4 +1,5 @@
-#This gets run after you have an estimate for the time difference between the two panels on the detector (step 2)
+#This should be a way to check the corrections, but it is not properly working right now
+#This gets run after you have an estimate for the time difference between the two panels on the detector
 import uproot
 import awkward
 import sys

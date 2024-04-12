@@ -1,3 +1,4 @@
+#UPDATE: DEFUNCT SCRIPT
 #This script creates timing calibrations for the FORMOSA demonstrator.
 #It is the first step to be run since it gives the time difference between the front and back panels
 import uproot

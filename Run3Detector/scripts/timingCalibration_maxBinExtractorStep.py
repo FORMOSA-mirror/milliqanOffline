@@ -1,3 +1,5 @@
+#This is STEP TWO in the timing calibration gen process.
+#It extracts the max bins from the calibrated files output by STEP ONE
 import ROOT
 
 # Open the ROOT file
