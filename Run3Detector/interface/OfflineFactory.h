@@ -150,6 +150,7 @@ struct offline_tree_{
     float tStartTime;
     float tTrigger;
     float tTimeDiff;
+    float tPrevPanelVeto;
     float tMatchingTimeCut;
     int tEvtNum;
     int tRunNum;
@@ -269,6 +270,7 @@ private:
     //Trigger friend variables
     ulong tClockCycles = 0;
     float tTime = -1.;
+    float tPrevPanelVeto = -1.;
     float tStartTime = -1.;
     float tTrigger = -1.;
     float tTimeDiff = -1.;

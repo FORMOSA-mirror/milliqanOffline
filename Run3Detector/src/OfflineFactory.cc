@@ -56,6 +56,7 @@ void OfflineFactory::addFriendTree(){
     inTree->AddFriend("matchedTrigEvents",friendFileName);
     inTree->SetBranchAddress("clockCycles", &tClockCycles);
     inTree->SetBranchAddress("time", &tTime);
+    inTree->SetBranchAddress("prevPanelVeto", &tPrevPanelVeto);
     inTree->SetBranchAddress("startTime", &tStartTime);
     inTree->SetBranchAddress("trigger", &tTrigger);
     inTree->SetBranchAddress("timeDiff", &tTimeDiff);
@@ -479,6 +480,7 @@ void OfflineFactory::prepareOutBranches(){
 
     outTree->Branch("tClockCycles", &outputTreeContents.tClockCycles);
     outTree->Branch("tTime", &outputTreeContents.tTime);
+    outTree->Branch("tPrevPanelVeto", &outputTreeContents.tPrevPanelVeto);
     outTree->Branch("tStartTime", &outputTreeContents.tStartTime);
     outTree->Branch("tTrigger", &outputTreeContents.tTrigger);
     outTree->Branch("tTimeDiff", &outputTreeContents.tTimeDiff);
@@ -1461,6 +1463,7 @@ void OfflineFactory::readWaveData(){
         allPulseBounds = readWaveDataPerEvent(i);
         outputTreeContents.tClockCycles = tClockCycles;
         outputTreeContents.tTime = tTime;
+	outputTreeContents.tPrevPanelVeto = tPrevPanelVeto;
         outputTreeContents.tStartTime = tStartTime;
         outputTreeContents.tTrigger = tTrigger;
         outputTreeContents.tTimeDiff = tTimeDiff;
