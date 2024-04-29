@@ -10,10 +10,13 @@ sys.path.append('/eos/experiment/formosa/steenis-general-functions')
 from general_functions import *
 sys.path.append(original_directory)
 #------------------------------------------------------------------------------------------------#
-filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run737_incomplete_muonSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run733_v35.root:t"]
+filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_matchedANDprocessed.root:t"]
 variables = ["timeFit", "area", "chan", "layer", "timeFit_module_calibrated", "height"]
 
-outfile = ROOT.TFile("outputs/exploringWindowTiming_muons.root", "RECREATE")
+outfile = ROOT.TFile("outputs/exploringWindowTiming_withPanels_run709_matchedANDprocessed.root", "RECREATE")
 timeFitDiff = ROOT.TH1F("timeFitDifferences", "timeFitDifferences", 200,-100,100)
 shapeHist = ROOT.TH2F("shapeDist", "shapeDist", 200, 0, 1300, 100, 0, 200e3)
 wfTimeHist = ROOT.TH2F("wfTime", "wfTime", 200, 0, 1300, 100, 0, 200e3)
@@ -58,6 +61,7 @@ for data in uproot.iterate(filelist, variables, library='ak', step_size=100000):
     tempDiffs = ak.broadcast_arrays(tempDiffs, data['area'])[0]
     tempDiffs = ak.drop_none(tempDiffs)
     data['timeDiffs'] = tempDiffs
+    
     '''timeDiffMask = (ak.any(data['timeDiffs'] < -40, axis=-1)) & (ak.any(data['timeDiffs'] > -65, axis=-1))
     data = data[timeDiffMask] #Removing events that don't have a layer0-layer3 timing difference in the negative peak.'''
     

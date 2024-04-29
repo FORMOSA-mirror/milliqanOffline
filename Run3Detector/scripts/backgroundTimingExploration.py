@@ -10,10 +10,12 @@ sys.path.append('/eos/experiment/formosa/steenis-general-functions')
 from general_functions import *
 sys.path.append(original_directory)
 #------------------------------------------------------------------------------------------------#
-filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingNoPanelsSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run737_incomplete_nonMuonSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingNoPanelsSkim.root:t"]
+filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run733_v35.root:t"]
 variables = ["timeFit", "area", "chan", "layer", "timeFit_module_calibrated", "height"]
 
-outfile = ROOT.TFile("outputs/exploringWindowTiming.root", "RECREATE")
+outfile = ROOT.TFile("outputs/exploringWindowTiming_run733_delay36.root", "RECREATE")
 timeFitDiff = ROOT.TH1F("timeFitDifferences", "timeFitDifferences", 200,-100,100)
 shapeHist = ROOT.TH2F("shapeDist", "shapeDist", 200, 0, 1300, 100, 0, 200e3)
 wfTimeHist = ROOT.TH2F("wfTime", "wfTime", 200, 0, 1300, 100, 0, 200e3)

@@ -10,14 +10,17 @@ sys.path.append('/eos/experiment/formosa/steenis-general-functions')
 from general_functions import *
 sys.path.append(original_directory)
 #------------------------------------------------------------------------------------------------#
-filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
+filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run737_incomplete_muonSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
 variables = ["timeFit", "area", "chan", "layer", "timeFit_module_calibrated", "height", "event_time_fromTDC"]
 
-outfile = ROOT.TFile("outputs/exploringWindowTiming_comparingRates_timeCut_withPanels.root", "RECREATE")
-times = ROOT.TH1F("times", "time", 500,1712.26e6,1712.6e6)
-times_withCut = ROOT.TH1F("times_withCut", "times_withCut", 500,1712.26e6,1712.6e6)
-rates = ROOT.TH1F("rates", "rates", 500,1712.26e6,1712.6e6)
-rates_withCut = ROOT.TH1F("rates_withCut", "rates_withCut", 500,1712.26e6,1712.6e6)
+timing_range = [1714.04e6, 1714.11e6] #uproot_range_finder(filelist[0], "event_time_fromTDC")
+outfile = ROOT.TFile("outputs/exploringWindowTiming_comparingRates_timeCut_withPanels_run737_incomplete.root", "RECREATE")
+
+times = ROOT.TH1F("times", "time", 500,timing_range[0],timing_range[1])
+times_withCut = ROOT.TH1F("times_withCut", "times_withCut", 500,timing_range[0],timing_range[1])
+rates = ROOT.TH1F("rates", "rates", 500,timing_range[0],timing_range[1])
+rates_withCut = ROOT.TH1F("rates_withCut", "rates_withCut", 500,timing_range[0],timing_range[1])
 windowTimes = ROOT.TH2F("windowTimes", "windowTimes", 200,0,1300, 4, 0, 4)
 windowTimes_withCut = ROOT.TH2F("windowTimes_withCut", "windowTimes_withCut", 200, 0, 1300, 4, 0, 4)
 
@@ -56,8 +59,9 @@ for data in uproot.iterate(filelist, variables, library='ak', step_size=100000):
     throughGoingMask_withCut = ak.any(((layer0) & timingCut), axis=-1) & ak.any(((layer1) & timingCut), axis=-1) & ak.any(((layer2) & timingCut), axis=-1) & ak.any(((layer3) & timingCut), axis=-1) 
     locationMask = throughGoingMask & ak.any(chan16, axis=-1) & ak.any(chan18, axis=-1) 
     locationMask_withCut = throughGoingMask_withCut & ak.any(chan16, axis=-1) & ak.any(chan18, axis=-1) 
+    data_copy = data
     data = data[locationMask] #We only want to consider throughGoingNonPanel events (event-level cut) 
-    data_withCut = data[locationMask_withCut] #To compare for the case where we look for through-going stuff that is triggerable in time
+    data_withCut = data_copy[locationMask_withCut] #To compare for the case where we look for through-going stuff that is triggerable in time
  
     maxes = data['event_time_fromTDC'][data['area']==ak.max(data['area'], axis=-1)] #Only want one pulse from each event
     event_time_fromTDC_noCut = ak.flatten(maxes, axis=None)
