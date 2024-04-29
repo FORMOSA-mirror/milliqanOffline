@@ -9,6 +9,7 @@ def parse_args():
     parser.add_argument('-i', '--inputDir', type=str, help='Input data directory', required=True)
     parser.add_argument('-v', '--version', type=str, default='v31_firstPedestals', help='Set the version of offline trees')
     parser.add_argument('-s', '--singleRun', type=str, default='-1', help='Single run number if running only one job')
+    parser.add_argument('-sS', '--singleSubRun', type=str, default='-1', help='Single run SUBnumber if running only one job')
     parser.add_argument('--slab', action='store_true', help='Process slab data')
     parser.add_argument('--formosa', action='store_true', help='Process formosa data')
     args = parser.parse_args()
@@ -17,9 +18,9 @@ def parse_args():
 def singleJob():
     print("Running single file")
     if args.formosa:
-        inFile = args.inputDir + 'MilliQan_Run{0}_formosa.root'.format(args.singleRun)
-        triggerFile = args.inputDir + 'MatchedEvents_Run{0}_rematch.root'.format(args.singleRun)
-        outFile = './MilliQan_Run{0}_{1}.root'.format(args.singleRun, args.version)
+        inFile = args.inputDir + 'MilliQan_Run{0}.{1}_formosa.root'.format(args.singleRun, args.singleSubRun)
+        triggerFile = args.inputDir + 'MatchedEvents_Run{0}.{1}_rematch.root'.format(args.singleRun, args.singleSubRun)
+        outFile = './MilliQan_Run{0}.{1}_{2}.root'.format(args.singleRun, args.singleSubRun, args.version)
     else:
         if args.slab:
             inFile = args.inputDir + 'MilliQanSlab_Run{0}_formosa.root'.format(args.singleRun)
@@ -37,7 +38,7 @@ def singleJob():
 
     if os.path.exists(triggerFile):
         cmd = '{0} -m {1}'.format(cmd, triggerFile.split("/")[-1])
-        subprocess.call("export EOS_MGM_URL=root://eosexperiment.cern.ch && cp "+args.triggerFile+" "+args.triggerFile.split("/")[-1], shell=True)
+        subprocess.call("export EOS_MGM_URL=root://eosexperiment.cern.ch && cp "+triggerFile+" "+triggerFile.split("/")[-1], shell=True)
     else:
         print("Trigger file {} does not exist".format(triggerFile))
 
@@ -102,7 +103,7 @@ def main():
 
     if os.path.exists(triggerFile):
         cmd = '{0} -m {1}'.format(cmd, triggerFile.split("/")[-1])
-        subprocess.call("export EOS_MGM_URL=root://eosexperiment.cern.ch && cp "+args.triggerFile+" "+args.triggerFile.split("/")[-1], shell=True)
+        subprocess.call("export EOS_MGM_URL=root://eosexperiment.cern.ch && cp "+triggerFile+" "+triggerFile.split("/")[-1], shell=True)
     else:
         print("Trigger file {} does not exist".format(triggerFile))
 
