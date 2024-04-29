@@ -1,5 +1,4 @@
-#This should be a way to check the corrections, but it is not properly working right now
-#This gets run after you have an estimate for the time difference between the two panels on the detector
+#For looking at the muons for comparison to the weird background that shows up in the begining of our timing windows
 import uproot
 import awkward
 import sys
