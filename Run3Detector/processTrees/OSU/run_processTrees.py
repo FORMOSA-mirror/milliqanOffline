@@ -67,6 +67,19 @@ def singleRun():
     filelist = 'durp'
     files = []
 
+    for filename in os.listdir(dataDir):
+        if('.root' in filename and "MilliQan" in filename):
+            index1 = filename.find("_")
+            index2 = filename.find(".")
+            index3 = filename.find("_", index2+1)
+            numRun = int(filename[index1+4:index2])
+            numFile = int(filename[index2+1:index3])
+            if args.run and numRun != int(args.run): continue
+            files.append([numRun, numFile])
+    print(files)
+    filelist = 'fileLists/filelist.txt'#.format(args.runDir, args.subDir)
+    np.savetxt(filelist,files)
+
     print('Running on slab', args.slab and not args.formosa)
     print('Running on FORMOSA', args.formosa)
 
@@ -81,17 +94,18 @@ def singleRun():
     request_memory = 500MB
     request_cpus = 1
     executable              = wrapper.sh
-    arguments               = $(PROCESS) {1} {2} {3} {5} {7} {8} {9}
+    arguments               = $(PROCESS) {1} {2} {3} {5} {7} {8} $(PROCESS)
     log                     = {6}log_$(PROCESS).log
     output                  = {6}out_$(PROCESS).txt
     error                   = {6}error_$(PROCESS).txt
     should_transfer_files   = Yes
     when_to_transfer_output = ON_EXIT
-    transfer_input_files = wrapper.sh, tree_wrapper.py, MilliDAQ.tar.gz, {4}, compile.sh
+    transfer_input_files = {2}, wrapper.sh, tree_wrapper.py, MilliDAQ.tar.gz, {4}, compile.sh
     getenv = true
     priority = 15
-    queue 1
-    """.format(len(files), dataDir, filelist, outDir, milliqanOffline, subName, logDir, args.single, runOnSlabs,runOnFORMOSA)
+    queue {0}
+    """.format(len(files), dataDir, filelist, outDir, milliqanOffline, subName, logDir, runOnSlabs, runOnFORMOSA, args.single)
+
     f.write(submitLines)
     f.close()
 

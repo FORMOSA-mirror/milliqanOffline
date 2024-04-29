@@ -62,16 +62,16 @@ ls .
 
 if [ $# -gt 8 ]; then
     #Running single job
-    echo Running single job $6 $7
-    if $8; then 
+    echo Running single job $8 $9
+    if $7; then 
         echo "Processing formosa data"
-        singularity exec  --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $6 -i $2 -v $5 --formosa
+        singularity exec  --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $8 -i $2 -v $5 --formosa
     else
-        if $7; then
+        if $6; then
             echo "Processing slab data"
-            singularity exec --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $6 -i $2 -v $5 --slab
+            singularity exec --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $8 -i $2 -v $5 --slab
         else
-            singularity exec --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $6 -i $2 -v $5
+            singularity exec --home ${home}  -B /eos /cvmfs/unpacked.cern.ch/registry.hub.docker.com/carriganm95/milliqan_offline:x86/ python3 tree_wrapper.py -s $8 -i $2 -v $5
         fi
     fi
 else
