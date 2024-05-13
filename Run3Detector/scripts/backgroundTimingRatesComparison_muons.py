@@ -10,16 +10,23 @@ sys.path.append('/eos/experiment/formosa/steenis-general-functions')
 from general_functions import *
 sys.path.append(original_directory)
 #------------------------------------------------------------------------------------------------#
-filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
-variables = ["timeFit", "area", "chan", "layer", "timeFit_module_calibrated", "height", "event_time_fromTDC"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run737_incomplete_muonSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_throughGoingPanelsSkim.root:t"]
+#filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run709_v35_matchedANDprocessed.root:t"]
+filelist = ["/eos/experiment/formosa/commissioning/data/hadded_outputs/MilliQan_Run740_v35_matchedANDprocessed.root:t"]
+variables = ["timeFit", "area", "chan", "layer", "timeFit_module_calibrated", "height", "event_time_fromTDC", "tTrigger"]
 
-outfile = ROOT.TFile("outputs/exploringWindowTiming_comparingRates_timeCut_withPanels.root", "RECREATE")
-times = ROOT.TH1F("times", "time", 500,1712.26e6,1712.6e6)
-times_withCut = ROOT.TH1F("times_withCut", "times_withCut", 500,1712.26e6,1712.6e6)
-rates = ROOT.TH1F("rates", "rates", 500,1712.26e6,1712.6e6)
-rates_withCut = ROOT.TH1F("rates_withCut", "rates_withCut", 500,1712.26e6,1712.6e6)
+timing_range = [1714.04e6, 1714.11e6] #uproot_range_finder(filelist[0], "event_time_fromTDC")
+outfile = ROOT.TFile("outputs/exploringWindowTiming_comparingRates_timeCut_withPanels_run740_withTriggers.root", "RECREATE")
+
+times = ROOT.TH1F("times", "time", 500,timing_range[0],timing_range[1])
+times_withCut = ROOT.TH1F("times_withCut", "times_withCut", 500,timing_range[0],timing_range[1])
+rates = ROOT.TH1F("rates", "rates", 500,timing_range[0],timing_range[1])
+rates_withCut = ROOT.TH1F("rates_withCut", "rates_withCut", 500,timing_range[0],timing_range[1])
 windowTimes = ROOT.TH2F("windowTimes", "windowTimes", 200,0,1300, 4, 0, 4)
 windowTimes_withCut = ROOT.TH2F("windowTimes_withCut", "windowTimes_withCut", 200, 0, 1300, 4, 0, 4)
+triggerBits = ROOT.TH1D("triggerBits", "triggerBits", 100, 0, 100)
+triggerBits_withCut = ROOT.TH1D("triggerBits_withCut", "triggerBits_withCut", 100, 0.5, 99.5)
 
 panelThresholds = {16:7000, 18:4000}
 barThreshold = 80000
@@ -38,6 +45,7 @@ for data in uproot.iterate(filelist, variables, library='ak', step_size=100000):
     
     #Broadcast event_time_fromTDC to proper shape
     data['event_time_fromTDC'] = ak.broadcast_arrays(ak.flatten(ak.pad_none(data['event_time_fromTDC'], 1, axis=-1), axis=None), data['area'])[0]
+    data['tTrigger'] = ak.broadcast_arrays(ak.flatten(ak.pad_none(data['tTrigger'], 1, axis=-1), axis=None), data['area'])[0]
 
     barThresholdMask = data['area']>barThreshold
     layer0 = data['layer']==0
@@ -56,20 +64,29 @@ for data in uproot.iterate(filelist, variables, library='ak', step_size=100000):
     throughGoingMask_withCut = ak.any(((layer0) & timingCut), axis=-1) & ak.any(((layer1) & timingCut), axis=-1) & ak.any(((layer2) & timingCut), axis=-1) & ak.any(((layer3) & timingCut), axis=-1) 
     locationMask = throughGoingMask & ak.any(chan16, axis=-1) & ak.any(chan18, axis=-1) 
     locationMask_withCut = throughGoingMask_withCut & ak.any(chan16, axis=-1) & ak.any(chan18, axis=-1) 
+    data_copy = data
     data = data[locationMask] #We only want to consider throughGoingNonPanel events (event-level cut) 
-    data_withCut = data[locationMask_withCut] #To compare for the case where we look for through-going stuff that is triggerable in time
+    data_withCut = data_copy[locationMask_withCut] #To compare for the case where we look for through-going stuff that is triggerable in time
  
-    maxes = data['event_time_fromTDC'][data['area']==ak.max(data['area'], axis=-1)] #Only want one pulse from each event
+    maxMask = data['area']==ak.max(data['area'], axis=-1)
+    maxes = data['event_time_fromTDC'][maxMask] #Only want one pulse from each event
     event_time_fromTDC_noCut = ak.flatten(maxes, axis=None)
     n_events_noCut = len(event_time_fromTDC_noCut)
     weights_noCut = ak.ones_like(event_time_fromTDC_noCut)
     times.FillN(n_events_noCut, array('d', event_time_fromTDC_noCut), array('d', weights_noCut), 1)
     
-    maxes_withCut = data_withCut['event_time_fromTDC'][data_withCut['area']==ak.max(data_withCut['area'], axis=-1)]
+    triggers = ak.flatten(data['tTrigger'][maxMask], axis=None)
+    triggerBits.FillN(n_events_noCut, array('d', triggers), array('d', triggers), 1)
+    
+    maxMask_withCut = data_withCut['area']==ak.max(data_withCut['area'], axis=-1)
+    maxes_withCut = data_withCut['event_time_fromTDC'][maxMask_withCut]
     event_time_fromTDC_cut = ak.flatten(maxes_withCut, axis=None)
     n_events_cut = len(event_time_fromTDC_cut)
     weights_cut = ak.ones_like(event_time_fromTDC_cut)
     times_withCut.FillN(n_events_cut, array('d', event_time_fromTDC_cut), array('d', weights_cut), 1)
+    
+    triggers_withCut = ak.flatten(data_withCut['tTrigger'][maxMask_withCut], axis=None)
+    triggerBits_withCut.FillN(n_events_cut, array('d', triggers_withCut), array('d', triggers_withCut), 1)
     
     #For checking the timing cut
     windowTimes_data = ak.flatten(data['timeFit_module_calibrated'], axis=None)
@@ -128,5 +145,15 @@ windowTimes_withCut.SetTitle("Checking Timing Cut, With Cut")
 windowTimes_withCut.GetXaxis().SetTitle("timeFit_module_calibrated [ns]")
 windowTimes_withCut.GetYaxis().SetTitle("Layer")
 windowTimes_withCut.Write()
+
+triggerBits.SetTitle("Trigger Bits Fired, No Timing Cuts")
+triggerBits.GetXaxis().SetTitle("Trigger Bits (Integer-Binned)")
+triggerBits.GetYaxis().SetTitle("Counts")
+triggerBits.Write()
+
+triggerBits_withCut.SetTitle("Trigger Bits Fired, With Loose Timing Cut")
+triggerBits_withCut.GetXaxis().SetTitle("Trigger Bits (Integer-Binned)")
+triggerBits_withCut.GetYaxis().SetTitle("Counts")
+triggerBits_withCut.Write()
 
 outfile.Close()
